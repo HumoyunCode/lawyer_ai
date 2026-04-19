@@ -1,6 +1,5 @@
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.1.0+cpu
-sentence-transformers==2.2.2
+torch --index-url https://download.pytorch.org/whl/cpu
+sentence-transformers
 fastapi
 uvicorn
 groq
