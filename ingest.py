@@ -2,30 +2,19 @@
 ingest.py - docs/ dagi .docx fayllarni o'qib, chunk qilib ChromaDB ga saqlaydi.
 Hozirgi MVP: asosan tadbirkorlik/biznesga oid normativ hujjatlar.
 Kelajakda shu skript orqali Konstitutsiya va boshqa qonunlar ham indekslanishi mumkin.
-Embedding: mahalliy (sentence-transformers).
+Embedding: mahalliy (fastembed / ONNX, PyTorch talab qilmaydi).
 Ishlatish: python ingest.py
 """
 
 import os
 from docx import Document
-import chromadb
-from chromadb.utils import embedding_functions
+
+from chromastore import get_collection
 
 # === SOZLAMALAR ===
 DOCS_FOLDER = "./docs"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100
-
-# BEPUL embedding - internetga ulanmaydi, localda ishlaydi
-emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="paraphrase-multilingual-MiniLM-L12-v2"  # Ko'p tilli, o'zbek ham tushunadi
-)
-
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
-collection = chroma_client.get_or_create_collection(
-    name="legal_docs",
-    embedding_function=emb_fn
-)
 
 
 def read_docx(filepath: str) -> str:
@@ -57,6 +46,8 @@ def ingest_all_docs():
     if not docx_files:
         print("❌ docs/ papkasida .docx fayl topilmadi!")
         return
+
+    collection = get_collection()
 
     print(f"📂 {len(docx_files)} ta fayl topildi...\n")
 

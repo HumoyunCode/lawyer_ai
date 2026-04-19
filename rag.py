@@ -5,27 +5,18 @@ Konstitutsiya va boshqa sohalar ham shu zanjir orqali qamrab olinadi.
 """
 
 import os
-import chromadb
-from chromadb.utils import embedding_functions
 from groq import Groq
 from dotenv import load_dotenv
+
+from chromastore import get_collection
 
 load_dotenv()  # .env fayldan o'qiydi
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 groq_client = Groq(api_key=GROQ_API_KEY)
 
-emb_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="paraphrase-multilingual-MiniLM-L12-v2"
-)
-
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
-collection = chroma_client.get_or_create_collection(
-    name="legal_docs",
-    embedding_function=emb_fn
-)
-
 
 def search_relevant_chunks(question: str, top_k: int = 10) -> list:
+    collection = get_collection()
     results = collection.query(
         query_texts=[question],
         n_results=top_k,

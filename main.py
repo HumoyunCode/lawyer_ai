@@ -12,7 +12,6 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from rag import ask
 import os
 
 load_dotenv()
@@ -59,6 +58,8 @@ def ask_question(req: QuestionRequest):
     POST /ask
     { "question": "MChJ ochish uchun nima kerak?" }
     """
+    from rag import ask
+
     result = ask(req.question)
     return AnswerResponse(
         answer=result["answer"],
